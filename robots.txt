@@ -1,0 +1,34 @@
+# robots.txt for trycareeros.com
+# Generated for CareerOS — https://trycareeros.com
+
+User-agent: *
+Allow: /
+
+# Block private/app routes from being indexed
+Disallow: /dashboard
+Disallow: /signup
+Disallow: /login
+Disallow: /api/
+Disallow: /admin/
+Disallow: /account/
+Disallow: /settings/
+Disallow: /checkout/
+Disallow: /billing/
+Disallow: /_next/
+Disallow: /static/chunks/
+
+# Allow social media crawlers full access
+User-agent: LinkedInBot
+Allow: /
+
+User-agent: Twitterbot
+Allow: /
+
+User-agent: facebookexternalhit
+Allow: /
+
+User-agent: WhatsApp
+Allow: /
+
+# Sitemap location
+Sitemap: https://trycareeros.com/sitemap.xml

@@ -1,0 +1,387 @@
+╔══════════════════════════════════════════════════════════════════════════════╗
+║           CareerOS — COMPLETE DEPLOYMENT & GROWTH MASTERPLAN               ║
+║           Domain: trycareeros.com | Founder: Sufyan Khan                   ║
+║           Generated: March 2025 | Status: Ready to Execute                 ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+PART 1 — DOMAIN & SUBDOMAIN ARCHITECTURE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+DECISION: What to put where
+
+  trycareeros.com          ← Marketing site (this website) ✅ DONE
+  app.trycareeros.com      ← The main CareerOS application (dashboard, tools)
+  tool.trycareeros.com     ← The candidate assistance tool you're building NOW
+  blog.trycareeros.com     ← Blog (add later for SEO)
+  status.trycareeros.com   ← System status page (use Instatus.com — free)
+
+WHY this structure (not subdirectories like trycareeros.com/tool):
+
+  1. INDEPENDENT DEPLOYMENT — Your tool can be built, updated, and deployed
+     separately from the marketing site. If tool goes down, site stays up.
+
+  2. DIFFERENT TECH STACKS — Marketing site is static HTML. Your tool is
+     likely React/Next.js/Node. They should live on different infra.
+
+  3. SECURITY ISOLATION — Cookies, sessions, and auth tokens are scoped per
+     subdomain. Users logged into app.trycareeros.com can't bleed auth
+     state onto the marketing site.
+
+  4. TEAM SEPARATION — When you hire, designers can update the marketing site
+     without touching the tool's codebase.
+
+  5. INDUSTRY STANDARD — Every major SaaS does this:
+     - Notion: notion.so (marketing) + notion.so/login (app) 
+     - Linear: linear.app (marketing) + linear.app/[team] (app)
+     - Stripe: stripe.com (marketing) + dashboard.stripe.com (app)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+PART 2 — STEP-BY-STEP DEPLOYMENT (DO THIS NOW)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+TOTAL TIME: ~45 minutes end to end
+COST: ₹0 (Vercel free tier is sufficient for launch)
+
+──────────────────────────────────────────────────────────────────────────────
+PHASE A: GITHUB SETUP (10 minutes)
+──────────────────────────────────────────────────────────────────────────────
+
+  A1. Create a GitHub account if you don't have one
+      → https://github.com/signup
+
+  A2. Create a new repository
+      → github.com → "New repository"
+      → Name: careeros-website
+      → Set to: Private (you can make public later)
+      → Click "Create repository"
+
+  A3. Upload your files to GitHub
+      Option 1 (easiest — no coding needed):
+        → On the empty repo page, click "uploading an existing file"
+        → Drag and drop ALL these files:
+            • index.html
+            • robots.txt
+            • sitemap.xml
+            • site.webmanifest
+        → Commit message: "Initial launch"
+        → Click "Commit changes"
+
+      Option 2 (via terminal):
+        mkdir careeros-website
+        cd careeros-website
+        # Copy your files here, then:
+        git init
+        git add .
+        git commit -m "Initial launch"
+        git remote add origin https://github.com/YOUR_USERNAME/careeros-website.git
+        git push -u origin main
+
+──────────────────────────────────────────────────────────────────────────────
+PHASE B: VERCEL SETUP (5 minutes)
+──────────────────────────────────────────────────────────────────────────────
+
+  B1. Go to https://vercel.com
+      → Click "Sign Up"
+      → Choose "Continue with GitHub"
+      → Authorise Vercel to access your GitHub
+
+  B2. Import your project
+      → Click "Add New..." → "Project"
+      → Find "careeros-website" → Click "Import"
+      → On the Configure page:
+          Framework Preset: Other
+          Root Directory: ./  (leave as default)
+          Build Command: (leave blank)
+          Output Directory: . (type a single dot)
+      → Click "Deploy"
+
+  B3. Wait ~30 seconds
+      → Vercel gives you a URL like: careeros-website.vercel.app
+      → Open it — your site is live!
+
+──────────────────────────────────────────────────────────────────────────────
+PHASE C: CONNECT trycareeros.com TO VERCEL (15 minutes)
+──────────────────────────────────────────────────────────────────────────────
+
+  C1. In Vercel dashboard → Your project → "Settings" → "Domains"
+      → Click "Add Domain"
+      → Type: trycareeros.com
+      → Click "Add"
+      → Also add: www.trycareeros.com
+
+  C2. Vercel shows you DNS records to add. It will look like:
+      ┌──────────┬────────┬─────────────────────┐
+      │ Type     │ Name   │ Value               │
+      ├──────────┼────────┼─────────────────────┤
+      │ A        │ @      │ 76.76.21.21         │
+      │ CNAME    │ www    │ cname.vercel-dns.com│
+      └──────────┴────────┴─────────────────────┘
+
+  C3. Log into where you bought trycareeros.com
+      (GoDaddy / Namecheap / BigRock / Hostinger etc.)
+      → Find: DNS Management / DNS Zone Editor / Advanced DNS
+
+  C4. DELETE any existing A records for @ (the root domain)
+      Then ADD these new records:
+
+      ┌──────────┬────────┬──────────────────────────┬──────────┐
+      │ Type     │ Name   │ Value                    │ TTL      │
+      ├──────────┼────────┼──────────────────────────┼──────────┤
+      │ A        │ @      │ 76.76.21.21              │ 3600     │
+      │ CNAME    │ www    │ cname.vercel-dns.com     │ 3600     │
+      └──────────┴────────┴──────────────────────────┴──────────┘
+
+      NOTE: Some registrars use "Host" instead of "Name".
+            "@" means the root domain (trycareeros.com itself).
+            "www" means www.trycareeros.com.
+
+  C5. Save and wait
+      → DNS propagates in 15 minutes – 4 hours (usually under 30 min)
+      → Check progress at: https://dnschecker.org/#A/trycareeros.com
+      → When all checkmarks turn green → your site is live
+
+  C6. SSL is automatic
+      → Vercel auto-provisions a free Let's Encrypt SSL certificate
+      → https://trycareeros.com will work automatically
+      → No action needed from you
+
+──────────────────────────────────────────────────────────────────────────────
+PHASE D: TOOL SUBDOMAIN SETUP (5 minutes — do this now, deploy tool later)
+──────────────────────────────────────────────────────────────────────────────
+
+  D1. In your domain registrar DNS, add this CNAME record NOW:
+      ┌──────────┬────────────────┬──────────────────────────┬──────────┐
+      │ Type     │ Name           │ Value                    │ TTL      │
+      ├──────────┼────────────────┼──────────────────────────┼──────────┤
+      │ CNAME    │ tool           │ cname.vercel-dns.com     │ 3600     │
+      │ CNAME    │ app            │ cname.vercel-dns.com     │ 3600     │
+      └──────────┴────────────────┴──────────────────────────┴──────────┘
+
+      This reserves tool.trycareeros.com and app.trycareeros.com.
+      They'll 404 until you deploy to them — that's fine.
+
+  D2. When your tool is ready:
+      → Create a NEW Vercel project for the tool
+      → Settings → Domains → Add: tool.trycareeros.com
+      → Done — it connects instantly since DNS is already pointing there
+
+──────────────────────────────────────────────────────────────────────────────
+PHASE E: EMAIL SETUP (10 minutes)
+──────────────────────────────────────────────────────────────────────────────
+
+  Option A: Zoho Mail (FREE — recommended for launch)
+    E1. Go to https://zoho.com/mail → "Add your existing domain" → Free plan
+    E2. Enter: trycareeros.com
+    E3. Create mailboxes:
+        → support@trycareeros.com
+        → grievance@trycareeros.com
+        → sufyan@trycareeros.com (your personal one)
+    E4. Zoho gives you MX records. Add them in your registrar DNS:
+        ┌──────┬────────┬──────────────────────────────┬──────────┬──────┐
+        │ Type │ Name   │ Value                        │ Priority │ TTL  │
+        ├──────┼────────┼──────────────────────────────┼──────────┼──────┤
+        │ MX   │ @      │ mx.zoho.in                   │ 10       │ 3600 │
+        │ MX   │ @      │ mx2.zoho.in                  │ 20       │ 3600 │
+        │ MX   │ @      │ mx3.zoho.in                  │ 50       │ 3600 │
+        │ TXT  │ @      │ v=spf1 include:zoho.in ~all  │ —        │ 3600 │
+        └──────┴────────┴──────────────────────────────┴──────────┴──────┘
+
+  Option B: Google Workspace (₹125/user/month — professional, worth it)
+    → workspace.google.com → "Get started"
+    → Same process, different MX records (Google provides them)
+
+──────────────────────────────────────────────────────────────────────────────
+PHASE F: GOOGLE SEARCH CONSOLE & ANALYTICS (5 minutes)
+──────────────────────────────────────────────────────────────────────────────
+
+  F1. GA4 Setup
+      → analytics.google.com → Create Account → Create Property
+      → Property name: CareerOS | Country: India | Currency: INR
+      → Platform: Web → URL: trycareeros.com
+      → Copy your Measurement ID (G-XXXXXXXXXX)
+      → Open index.html → Ctrl+F → Replace "YOUR_GA4_ID" with your real ID
+      → Re-upload index.html to GitHub (Vercel auto-redeploys in 30 sec)
+
+  F2. Google Search Console
+      → search.google.com/search-console
+      → Add Property → Domain → trycareeros.com
+      → Verification: Add the TXT record they give you in your DNS
+      → After verification → Sitemaps → Submit:
+        https://trycareeros.com/sitemap.xml
+
+  F3. Bing Webmaster Tools (don't skip — 10% of Indian traffic)
+      → bing.com/webmasters
+      → Add your site → Import from Google Search Console
+      → Done in 2 clicks
+
+──────────────────────────────────────────────────────────────────────────────
+PHASE G: LEGAL PAGES (Create before accepting payments)
+──────────────────────────────────────────────────────────────────────────────
+
+  Use Termly (https://termly.io) — free tier covers all you need:
+  → Privacy Policy    → Host at: trycareeros.com/privacy
+  → Terms of Service  → Host at: trycareeros.com/terms
+  → Refund Policy     → Host at: trycareeros.com/refund
+  → Cookie Policy     → Host at: trycareeros.com/cookie-policy
+  → Grievance Officer → Host at: trycareeros.com/grievance
+      Content: Name: Sufyan Khan
+               Email: grievance@trycareeros.com
+               Response time: Within 30 days (as per IT Act)
+
+  Simplest approach: Create these as separate HTML files.
+  Upload them alongside index.html in GitHub.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+PART 3 — THE CANDIDATE TOOL: INTEGRATION PLAN
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+This is already PLANNED and RESERVED in the website.
+A section placeholder exists in index.html (search for: id="tool-teaser").
+It shows a "Coming Soon" card professionally.
+
+WHAT I'VE ALREADY DONE IN THE WEBSITE:
+  ✅ Reserved section in the website between Features and How It Works
+  ✅ "Coming Soon" badge with your tool's teaser design
+  ✅ Email waitlist capture for early access signups
+  ✅ Placeholder for the embedded iframe/link once tool is ready
+  ✅ Subdomain DNS slot reserved: tool.trycareeros.com
+
+WHEN YOUR TOOL IS READY — just tell me ONE of these:
+  Option A: "Here's the URL" → I embed it as an iframe in the website
+  Option B: "Here's the embed code" → I drop it into the reserved section
+  Option C: "It's on tool.trycareeros.com" → I link to it and add a launch banner
+
+TOOL SUBDOMAIN ARCHITECTURE DECISION:
+  Your tool goes on: tool.trycareeros.com
+
+  WHY "tool" not "app":
+  → "app" is reserved for your main CareerOS platform (dashboard, subscriptions)
+  → "tool" is specifically for this candidate assistance tool
+  → Clean mental model: tool.trycareeros.com = the free/viral tool
+                         app.trycareeros.com  = the paid platform
+  → You can cross-promote: tool users see upgrade prompts to app
+
+  HOW IT CONNECTS TO THE MARKETING SITE:
+  → Marketing site (trycareeros.com) has a section for the tool
+  → Clicking "Try the Tool" opens tool.trycareeros.com in a new tab
+     OR shows it embedded in an iframe modal on the marketing page
+  → This is a conversion funnel: Tool user → sees CareerOS → signs up for app
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+PART 4 — FAVICON GENERATION (5 minutes)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  1. Go to https://realfavicongenerator.net
+  2. Click "Select your Favicon image"
+  3. Upload a square logo (or use the CareerOS initials "C" in a gradient box)
+     → Even a 512×512 PNG works. Canva can make this in 5 minutes.
+  4. Set Background color: #0a0f1e (matches the site)
+  5. Download the package
+  6. Upload ALL files to GitHub alongside index.html:
+     • favicon.ico
+     • favicon-32x32.png
+     • favicon-16x16.png
+     • apple-touch-icon.png
+     • android-chrome-192x192.png
+     • android-chrome-512x512.png
+  7. The website already has the correct <link> tags — it auto-picks them up.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+PART 5 — OG IMAGE (Social sharing thumbnail)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  When someone shares trycareeros.com on LinkedIn/WhatsApp,
+  it shows a preview image. You need to create:
+
+  File name: og-image.png
+  Size: 1200 × 630 pixels
+  Content: CareerOS logo + headline "Increase Your Salary With AI Career Coaching"
+  Background: Dark navy (#0a0f1e) with blue gradient
+
+  Create in Canva (free):
+  → canva.com → Create design → Custom size → 1200×630
+  → Use the CareerOS brand colors (#2f5ff5, #0dd9a3)
+  → Export as PNG named: og-image.png
+  → Upload to GitHub alongside index.html
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+PART 6 — POST-LAUNCH CHECKLIST
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  IMMEDIATE (Day 1):
+  [ ] Files uploaded to GitHub
+  [ ] Vercel project created and deployed
+  [ ] trycareeros.com DNS A record → 76.76.21.21
+  [ ] www.trycareeros.com CNAME → cname.vercel-dns.com
+  [ ] tool.trycareeros.com CNAME → cname.vercel-dns.com (reserved)
+  [ ] app.trycareeros.com CNAME → cname.vercel-dns.com (reserved)
+  [ ] SSL green padlock showing at https://trycareeros.com
+  [ ] favicon visible in browser tab
+  [ ] GA4 ID replaced in index.html (YOUR_GA4_ID → G-XXXXXXXXXX)
+  [ ] support@trycareeros.com receiving test email ✉
+  [ ] grievance@trycareeros.com receiving test email ✉
+  [ ] Cookie banner showing on first visit
+  [ ] Salary Reality Check tool working end to end
+  [ ] All CTA buttons linking to correct URLs
+  [ ] Mobile layout checked (Chrome → DevTools → Toggle device)
+
+  WEEK 1:
+  [ ] Google Search Console verified + sitemap submitted
+  [ ] Bing Webmaster Tools set up
+  [ ] og-image.png uploaded (test at: opengraph.xyz)
+  [ ] All legal pages live (/privacy /terms /refund /grievance)
+  [ ] WhatsApp test: click footer link → opens chat with +918147492686
+
+  WEEK 2-4:
+  [ ] First blog post published at /blog
+  [ ] Submit to Product Hunt
+  [ ] Share Salary Reality Check tool on LinkedIn (viral potential)
+  [ ] Set up Razorpay/Cashfree for payment processing
+  [ ] Integrate payment gateway with /signup flow
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+PART 7 — UPDATING THE WEBSITE IN FUTURE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  Every future change is 3 steps:
+  1. Edit index.html (or other files)
+  2. Upload to GitHub (drag & drop or git push)
+  3. Vercel auto-detects the change and redeploys in ~30 seconds
+
+  When your tool is ready, come back and tell me:
+  → The URL or embed code
+  → What you want to call it
+  → Whether it should open in a new tab or embed on this page
+  I will update the reserved section in the website immediately.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+COMPLETE DNS RECORDS REFERENCE (copy-paste ready)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Add ALL of these in your registrar DNS panel at once:
+
+  TYPE    NAME              VALUE                          TTL    PRIORITY
+  ──────  ────────────────  ─────────────────────────────  ─────  ────────
+  A       @                 76.76.21.21                    3600   —
+  CNAME   www               cname.vercel-dns.com           3600   —
+  CNAME   tool              cname.vercel-dns.com           3600   —
+  CNAME   app               cname.vercel-dns.com           3600   —
+  CNAME   status            statuspage.instatus.com        3600   —
+  MX      @                 mx.zoho.in                     3600   10
+  MX      @                 mx2.zoho.in                    3600   20
+  MX      @                 mx3.zoho.in                    3600   50
+  TXT     @                 v=spf1 include:zoho.in ~all    3600   —
+  TXT     _dmarc            v=DMARC1; p=none; rua=mailto:support@trycareeros.com  3600  —
+  TXT     @                 [Google Search Console verification — add after GSC setup]
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SUPPORT
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  Founder: Sufyan Khan
+  WhatsApp: +91 8147492686
+  Email: support@trycareeros.com
+  Domain: trycareeros.com (purchased ✅)
+  Hosting: Vercel (to be set up)
+  Status: Ready to deploy
